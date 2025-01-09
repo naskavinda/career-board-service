@@ -28,7 +28,7 @@ spring:
       secretmanager:
         enabled: true
         project-id: career-crew
-        secret-name-prefix: 'sm://'
+        secret-name-prefix: "sm://"
       sql:
         enabled: false
 
@@ -40,6 +40,5 @@ management:
   endpoint:
     health:
       show-details: always
-
 
 greeting: "${sm://projects/553556926651/secrets/greeting/versions/1}"

@@ -1,71 +1,71 @@
-steps:
-  - id: 'Build Docker Image'
-    # Description: Build the Docker image from the source code
-    name: gcr.io/cloud-builders/docker
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        docker build -t $_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA .
+# steps:
+#   - id: 'Build Docker Image'
+#     # Description: Build the Docker image from the source code
+#     name: gcr.io/cloud-builders/docker
+#     entrypoint: 'bash'
+#     args:
+#       - '-c'
+#       - |
+#         docker build -t $_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA .
 
-  - id: 'Build Java'
-    # Description: Build the Java app using Maven from the source code
-    # creates compiled java classes in /workspace useful for sonarqube analysis
-    name: gcr.io/cloud-builders/mvn
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        mvn dependency:go-offline
-        mvn clean package -DskipTests
-        mvn install
+#   - id: 'Build Java'
+#     # Description: Build the Java app using Maven from the source code
+#     # creates compiled java classes in /workspace useful for sonarqube analysis
+#     name: gcr.io/cloud-builders/mvn
+#     entrypoint: 'bash'
+#     args:
+#       - '-c'
+#       - |
+#         mvn dependency:go-offline
+#         mvn clean package -DskipTests
+#         mvn install
 
-  - id: 'Push Docker Image'
-    # Description: Push the Docker image to the Artifact Registry
-    name: gcr.io/cloud-builders/docker
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        docker push $_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA
+#   - id: 'Push Docker Image'
+#     # Description: Push the Docker image to the Artifact Registry
+#     name: gcr.io/cloud-builders/docker
+#     entrypoint: 'bash'
+#     args:
+#       - '-c'
+#       - |
+#         docker push $_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA
 
-  - id: 'Run Sonar Scanner'
-    # Description: Analyze the code for quality and security issues using SonarScanner
-    name: gcr.io/$PROJECT_ID/sonar-scanner:latest
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        sonar-scanner -X \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.token=$_SONAR_TOKEN \
-          -Dsonar.projectKey=career-crew_career-board-service \
-          -Dsonar.organization=career-crew \
-          -Dsonar.java.binaries=target/classes \
-          -Dsonar.sources=src/main/java \
-          -Dsonar.tests=src/test/java \
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+#   - id: 'Run Sonar Scanner'
+#     # Description: Analyze the code for quality and security issues using SonarScanner
+#     name: gcr.io/$PROJECT_ID/sonar-scanner:latest
+#     entrypoint: 'bash'
+#     args:
+#       - '-c'
+#       - |
+#         sonar-scanner -X \
+#           -Dsonar.host.url=https://sonarcloud.io \
+#           -Dsonar.token=$_SONAR_TOKEN \
+#           -Dsonar.projectKey=career-crew_career-board-service \
+#           -Dsonar.organization=career-crew \
+#           -Dsonar.java.binaries=target/classes \
+#           -Dsonar.sources=src/main/java \
+#           -Dsonar.tests=src/test/java \
+#           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
-  - id: 'Deploy to Cloud Run'
-    # Description: Deploy the Docker image to Google Cloud Run
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        if [ "$_DEPLOY" -eq 1 ]; then
-          gcloud run deploy $_SERVICE_NAME \
-            --image $_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA \
-            --region $_DEPLOY_REGION \
-            --platform $_PLATFORM;
-        else
-          echo "Skipping deployment as _DEPLOY is not set to 1";
-        fi
+#   - id: 'Deploy to Cloud Run'
+#     # Description: Deploy the Docker image to Google Cloud Run
+#     name: gcr.io/google.com/cloudsdktool/cloud-sdk
+#     entrypoint: 'bash'
+#     args:
+#       - '-c'
+#       - |
+#         if [ "$_DEPLOY" -eq 1 ]; then
+#           gcloud run deploy $_SERVICE_NAME \
+#             --image $_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA \
+#             --region $_DEPLOY_REGION \
+#             --platform $_PLATFORM;
+#         else
+#           echo "Skipping deployment as _DEPLOY is not set to 1";
+#         fi
 
-timeout: 600s
-images:
-  - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA'
-options:
-  logging: CLOUD_LOGGING_ONLY
-  machineType: E2_HIGHCPU_8
-  diskSizeGb: 20
+# timeout: 600s
+# images:
+#   - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPO/$_SERVICE_NAME:$COMMIT_SHA'
+# options:
+#   logging: CLOUD_LOGGING_ONLY
+#   machineType: E2_HIGHCPU_8
+#   diskSizeGb: 20

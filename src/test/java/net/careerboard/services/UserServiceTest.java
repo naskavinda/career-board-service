@@ -28,7 +28,7 @@ class UserServiceTest {
     }
 
     @Test
-    void addUser() {
+    void addUser() throws Exception {
         User user = new User();
         when(userRepo.save(any(User.class))).thenReturn(user);
 
