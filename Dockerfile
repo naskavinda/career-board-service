@@ -17,4 +17,5 @@ COPY --from=build /app/target/*.jar app.jar
 # Copy the classes directory to ensure build files are available
 COPY --from=build /app/target/* /target/
 # Set the entry point for the application
+EXPOSE 8081
 ENTRYPOINT ["java","-jar","/app.jar"]
