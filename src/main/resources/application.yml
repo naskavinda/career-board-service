@@ -1,36 +1,23 @@
 spring:
-  config:
-    import: "sm://"
   application:
     name: career-board
   datasource:
-    url: jdbc:postgresql:///career-board
-    username: career-board
-    password: "${sm://projects/553556926651/secrets/pg-dev-password/versions/1}"
+    url: jdbc:postgresql://localhost:5432/career_board_database?currentSchema=career_board_schema # Update to point to your local PostgreSQL
+    username: career_board_user # Replace with your local PostgreSQL username
+    password: career_board_password # Replace with your local PostgreSQL password
     driver-class-name: org.postgresql.Driver
     hikari:
-      data-source-properties:
-        socketFactory: com.google.cloud.sql.postgres.SocketFactory
-        cloudSqlInstance: career-crew:us-central1:career-board-instance
+      data-source-properties: {} # Remove Google Cloud SQL socket factory properties
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+    #    properties:
+    #      hibernate:
+    #        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
 
   jackson:
     serialization:
-      fail-on-empty-beans: false
-
-  cloud:
-    gcp:
-      secretmanager:
-        enabled: true
-        project-id: career-crew
-        secret-name-prefix: "sm://"
-      sql:
-        enabled: false
+      FAIL_ON_EMPTY_BEANS: false
 
 management:
   endpoints:
@@ -42,3 +29,6 @@ management:
       show-details: always
 
 greeting: "${sm://projects/553556926651/secrets/greeting/versions/1}"
+
+server:
+  port: 8081

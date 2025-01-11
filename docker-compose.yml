@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: career_board_user
+      POSTGRES_PASSWORD: career_board_password
+      POSTGRES_DB: career_board_database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U career_board_user -d career_board_database" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot-backend
+    ports:
+      - "8081:8081" # Matches the server.port in your Spring Boot app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/career_board_database
+      SPRING_DATASOURCE_USERNAME: career_board_user
+      SPRING_DATASOURCE_PASSWORD: career_board_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
