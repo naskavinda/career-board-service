@@ -3,6 +3,7 @@ package net.careerboard.services;
 import lombok.RequiredArgsConstructor;
 import net.careerboard.models.User;
 import net.careerboard.repos.UserRepo;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.security.Jwks.OP;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class UserService{
 
     private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
    
     public Optional<User> findById(Long userId) {
@@ -31,6 +33,7 @@ public class UserService{
         if(existsByUsername(user.getUsername())){
             throw new IllegalAccessException("username alredy taken");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);  
     }
 
