@@ -3,10 +3,6 @@ package net.careerboard.controllers;
 import lombok.RequiredArgsConstructor;
 import net.careerboard.models.User;
 import net.careerboard.services.UserService;
-
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,16 +10,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserController {
+    private final UserService userService;
     @Value(value = "${greeting}")
     String greeting;
-    private final UserService userService;
+
     @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String home() {
-        System.out.println("Hello "+greeting);
+        System.out.println("Hello " + greeting);
         return "{'message': 'Hello world'}";
     }
 
@@ -34,11 +34,11 @@ public class UserController {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> authenticatedUser = userService.findByUsername(currentUsername);
         if (authenticatedUser.isEmpty()) {
-        return new ResponseEntity<>("Authenticated user not found!", HttpStatus.UNAUTHORIZED);
-    }
-    if (!authenticatedUser.get().getUserId().equals(userId)) {
-        return new ResponseEntity<>("Access denied: You can only access your own details.", HttpStatus.FORBIDDEN);
-    }
+            return new ResponseEntity<>("Authenticated user not found!", HttpStatus.UNAUTHORIZED);
+        }
+        if (!authenticatedUser.get().getUserId().equals(userId)) {
+            return new ResponseEntity<>("Access denied: You can only access your own details.", HttpStatus.FORBIDDEN);
+        }
         var user = userService.findById(userId);
         if (user.isEmpty()) {
             return new ResponseEntity<String>("User with ID=%d not found!".formatted(userId), HttpStatus.NOT_FOUND);
@@ -47,17 +47,17 @@ public class UserController {
     }
 
     @PostMapping(value = "/user")
-    public ResponseEntity<String> createUser(@RequestBody User user){
-        try{
+    public ResponseEntity<String> createUser(@RequestBody User user) {
+        try {
             User createdUser = this.userService.addUser(user);
             return new ResponseEntity<>("User is created successfully: " + createdUser.toString(), HttpStatus.CREATED);
-        } catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>("User is creation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-     @GetMapping("/admin")
-        public ResponseEntity<List<User>> getAllUsers() {
+    @GetMapping("/admin")
+    public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }

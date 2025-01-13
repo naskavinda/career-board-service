@@ -41,11 +41,11 @@ public class Post {
     }
 
     @JsonBackReference
-    public PostDTO getPostDTO(){
+    public PostDTO getPostDTO() {
         return new PostDTO(getUser().getUserId(), getTitle(), getContent());
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return user.getUsername();
     }
 }

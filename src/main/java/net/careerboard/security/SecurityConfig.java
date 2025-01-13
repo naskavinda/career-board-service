@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import net.careerboard.security.jwt.JwtAuthenticationFilter;
 import net.careerboard.security.jwt.JwtUtil;
 import net.careerboard.services.CustomUserDetailService;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,11 +35,12 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-  
+
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-    return new JwtAuthenticationFilter(jwtUtil, customUserDetailService);
-}
+        return new JwtAuthenticationFilter(jwtUtil, customUserDetailService);
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -53,15 +53,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-     return   http.cors(AbstractHttpConfigurer::disable)
+        return http.cors(AbstractHttpConfigurer::disable)
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/api/auth/register/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/auth/login/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/user/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET,"/api/admin/**").hasAuthority("ADMIN")
-                        .anyRequest().authenticated()     
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user/**").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)

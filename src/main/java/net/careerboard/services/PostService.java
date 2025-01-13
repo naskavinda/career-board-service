@@ -21,7 +21,7 @@ public class PostService {
         return this.postRepo.findAll();
     }
 
-    public List<Post> findPostsByUserId(Long userId){
+    public List<Post> findPostsByUserId(Long userId) {
         return this.postRepo.findByUserUserId(userId);
     }
 

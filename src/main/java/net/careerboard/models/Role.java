@@ -1,8 +1,7 @@
 package net.careerboard.models;
 
 
-
-public enum Role  {
+public enum Role {
     USER,
-    ADMIN;
+    ADMIN
 }

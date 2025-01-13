@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class User {
     String firstName;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 8, max=64) 
+    @Size(min = 8, max = 64)
     String password;
 
     @Column(name = "last_name", nullable = false)
@@ -42,10 +43,11 @@ public class User {
     @Column(nullable = false, name = "role")
     private Role role;
 
-    public User(){
-        this.active = true; 
-        this.createdAt = LocalDateTime.now(); 
+    public User() {
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
     }
+
     public User(String username, String password, String firstName, String lastName) {
         super();
         this.username = username;
@@ -60,7 +62,7 @@ public class User {
                 "username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", role='" + role + '\''+ 
+                ", role='" + role + '\'' +
                 '}';
     }
 }

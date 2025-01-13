@@ -1,16 +1,5 @@
 package net.careerboard.security.jwt;
 
-import java.security.Key;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -20,13 +9,22 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import net.careerboard.models.Role;
 import net.careerboard.models.User;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long TOKEN_VALIDITY_MS = 10 * 60 * 60 * 1000; 
-
+    private static final long TOKEN_VALIDITY_MS = 10 * 60 * 60 * 1000;
 
 
     public String generateToken(User user) {
@@ -35,7 +33,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(user.getUsername())
-                 .claim("role",List.of( user.getRole().name()))
+                .claim("role", List.of(user.getRole().name()))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
@@ -46,7 +44,7 @@ public class JwtUtil {
         String username = extractClaim(token, Claims::getSubject);
         return username;
     }
-   
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
@@ -60,10 +58,10 @@ public class JwtUtil {
         try {
             return Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
         } catch (SignatureException | ExpiredJwtException e) {
-           throw new AccessDeniedException("Access denied "+ e.getMessage());
+            throw new AccessDeniedException("Access denied " + e.getMessage());
+        }
     }
-    }
-    
+
     public boolean validateToken(String token, UserDetails userDetails) {
 
         try {
@@ -77,11 +75,12 @@ public class JwtUtil {
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
+
     public Set<Role> extractRoles(String token) {
-    @SuppressWarnings("unchecked")
-    List<String> roles = extractClaim(token, claims -> claims.get("role", List.class));
-    return roles.stream()
-                .map(role -> Role.valueOf(role.toUpperCase())) 
+        @SuppressWarnings("unchecked")
+        List<String> roles = extractClaim(token, claims -> claims.get("role", List.class));
+        return roles.stream()
+                .map(role -> Role.valueOf(role.toUpperCase()))
                 .collect(Collectors.toSet());
-}
+    }
 }
