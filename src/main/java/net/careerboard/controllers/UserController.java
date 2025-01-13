@@ -21,11 +21,11 @@ public class UserController {
     @Value(value = "${greeting}")
     String greeting;
 
-    @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody String home() {
-        System.out.println("Hello " + greeting);
-        return "{'message': 'Hello world'}";
-    }
+//    @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public @ResponseBody String home() {
+//        System.out.println("Hello " + greeting);
+//        return "{'message': 'Hello world'}";
+//    }
 
 
     @GetMapping("/user/{userId}")

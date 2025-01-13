@@ -40,7 +40,13 @@ Career Board is a basic Spring Boot application that provides a simple REST endp
 
 4. **Access the application**
 
-   Open your browser and go to `http://localhost:8080`.
+   Open your browser and go to `http://localhost:8081`.
+
+5. **Access Swagger UI & API Docs**
+
+   Open your browser and go to `http://localhost:8081/swagger-ui.html` to access the swagger UI.
+
+   Open your browser and go to `http://localhost:8081/v3/api-docs` to access the API documentation.
 
 ## Endpoint
 
