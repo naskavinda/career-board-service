@@ -25,10 +25,19 @@ services:
     ports:
       - "8081:8081" # Matches the server.port in your Spring Boot app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/career_board_database
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/career_board_database?currentSchema=career_board_schema
       SPRING_DATASOURCE_USERNAME: career_board_user
       SPRING_DATASOURCE_PASSWORD: career_board_password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  flyway:
+    image: flyway/flyway:latest
+    entrypoint: ["flyway", "-url=jdbc:postgresql://postgres:5432/career_board_database?currentSchema=career_board_schema", "-user=career_board_user", "-password=career_board_password", "-baselineOnMigrate=true", "migrate"]
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
     depends_on:
       postgres:
         condition: service_healthy

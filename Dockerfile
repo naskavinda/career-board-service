@@ -6,6 +6,8 @@ COPY pom.xml .
 RUN mvn dependency:go-offline
 # Copy the source code into the container
 COPY src ./src
+# Copy the resources directory to include Flyway migration scripts
+COPY src/main/resources ./src/main/resources
 # Run the build command to create the build files in the /target/classes directory
 RUN mvn clean package -DskipTests
 
