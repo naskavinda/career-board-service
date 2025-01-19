@@ -34,6 +34,7 @@ public class JwtUtil {
                 .setHeaderParam("typ", "JWT")
                 .setSubject(user.getUsername())
                 .claim("role", List.of(user.getRole().name()))
+                .claim("userId", user.getUserId())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
