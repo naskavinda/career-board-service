@@ -23,7 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/**").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/moderator/**").hasAuthority("MODERATOR")
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

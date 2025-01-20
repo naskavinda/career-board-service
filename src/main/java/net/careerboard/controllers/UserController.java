@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,6 +63,17 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    @PreAuthorize("hasAuthority('MODERATOR')")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        try {
+            String response = userService.deleteUserById(userId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalAccessException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

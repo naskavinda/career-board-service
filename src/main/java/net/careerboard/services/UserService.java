@@ -52,4 +52,19 @@ public class UserService {
     public Optional<User> findByUsername(String username) {
         return userRepo.findByUsername(username);
     }
+
+    public String deleteUserById(Long userId) throws IllegalAccessException {
+
+        Optional<User> user = userRepo.findById(userId);
+        if (user.isEmpty()) {
+            throw new IllegalAccessException("user not available");
+        } else if (!user.get().getActive()) {
+            throw new IllegalAccessException("user is already inactive");
+        } else {
+            user.get().setActive(false);
+            userRepo.save(user.get());
+            return "user is deleted";
+        }
+    }
+
 }
