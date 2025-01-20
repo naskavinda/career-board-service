@@ -1,6 +1,7 @@
 package net.careerboard.controllers;
 
 import lombok.RequiredArgsConstructor;
+import net.careerboard.dto.UserResponse;
 import net.careerboard.models.User;
 import net.careerboard.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,8 +58,8 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
