@@ -32,6 +32,10 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
+    private PostLifecycle status;
+
     @Override
     public String toString() {
         return "Post{" +
