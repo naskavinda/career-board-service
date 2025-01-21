@@ -62,7 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/register/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAuthority("ADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/moderator/**").hasAuthority("MODERATOR")
                         .anyRequest().authenticated()
                 )
