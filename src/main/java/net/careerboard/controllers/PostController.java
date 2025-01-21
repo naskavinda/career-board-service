@@ -2,6 +2,7 @@ package net.careerboard.controllers;
 
 import lombok.RequiredArgsConstructor;
 import net.careerboard.models.Post;
+import net.careerboard.models.PostLifecycle;
 import net.careerboard.models.User;
 import net.careerboard.models.dto.PostRequest;
 import net.careerboard.services.PostService;
@@ -61,6 +62,7 @@ public class PostController {
             post.setTitle(request.getTitle());
             post.setContent(request.getContent());
             post.setCreatedAt(LocalDateTime.now());
+            post.setStatus(PostLifecycle.valueOf(request.getStatus()));
 
             Post savedPost = postService.addPost(post);
             return ResponseEntity.ok(savedPost.getPostDTO());

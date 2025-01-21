@@ -2,6 +2,7 @@ package net.careerboard.services;
 
 import lombok.RequiredArgsConstructor;
 import net.careerboard.models.Post;
+import net.careerboard.models.PostLifecycle;
 import net.careerboard.repos.PostRepo;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,10 @@ public class PostService {
 
     public List<Post> findPostsByUserId(Long userId) {
         return this.postRepo.findByUserUserId(userId);
+    }
+
+    public List<Post> findPublishedPostsByUserId(Long userId) {
+        return this.postRepo.findByUserUserIdAndStatus(userId, PostLifecycle.PUBLISHED);
     }
 
     public Optional<Post> findById(Long postId) {
