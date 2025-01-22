@@ -14,30 +14,24 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ImagesService {
 
-    @Value("${aws.access-key}")
-    private String accessKey;
-
-    @Value("${aws.secret-key}")
-    private String secretKey;
-
-    @Value("${aws.region}")
-    private String region;
-
-    @Value("${aws.s3.bucket-name}")
-    private String bucketName;
-
-    @Value("${aws.s3.presign-duration-minutes}")
-    private int presignDurationMinutes;
-
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
+    @Value("${aws.access-key}")
+    private String accessKey;
+    @Value("${aws.secret-key}")
+    private String secretKey;
+    @Value("${aws.region}")
+    private String region;
+    @Value("${aws.s3.bucket-name}")
+    private String bucketName;
+    @Value("${aws.s3.presign-duration-minutes}")
+    private int presignDurationMinutes;
 
     public List<String> listBuckets() {
         try {
@@ -80,21 +74,25 @@ public class ImagesService {
                 .collect(Collectors.toList());
     }
 
-    public String generatePresignedUploadUrl(String imageName) {
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(imageName)
-                .build();
+    public List<PresignImageResponse> generatePresignedUploadUrl(List<String> imageNames) {
+        return imageNames.stream()
+                .map(imageName -> {
+                    PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(imageName)
+                            .build();
 
-        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(presignDurationMinutes))
-                .putObjectRequest(putObjectRequest)
-                .build();
+                    PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                            .signatureDuration(Duration.ofMinutes(presignDurationMinutes))
+                            .putObjectRequest(putObjectRequest)
+                            .build();
 
-        URL presignedUrl = s3Presigner.presignPutObject(presignRequest).url();
-        s3Presigner.close();
+                    URL presignedUrl = s3Presigner.presignPutObject(presignRequest).url();
+                    s3Presigner.close();
 
-        return presignedUrl.toString();
+                    return new PresignImageResponse(presignedUrl.toString(), imageName);
+                })
+                .toList();
     }
 
     private String generatePresignedViewUrl(String imageName) {

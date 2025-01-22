@@ -27,17 +27,17 @@ public class ImagesController {
         return imagesService.listObjectsInBucket();
     }
 
-    @GetMapping("/upload-url/{imageName}")
-    public ResponseEntity<String> generatePresignedUploadUrl(@PathVariable String imageName) {
+    @PostMapping("/upload-url")
+    public ResponseEntity<List<PresignImageResponse>> generatePresignedUploadUrl(@RequestBody List<String> imageNames) {
         try {
-            String uploadUrl = imagesService.generatePresignedUploadUrl(imageName);
-            return ResponseEntity.ok(uploadUrl);
+            List<PresignImageResponse> presignImageResponse = imagesService.generatePresignedUploadUrl(imageNames);
+            return ResponseEntity.ok(presignImageResponse);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
-    @PostMapping("/view-urls")
+    @PostMapping("/view-url")
     public ResponseEntity<List<PresignImageResponse>> generatePresignedViewUrls(@RequestBody List<String> imageNames) {
         try {
             List<PresignImageResponse> presignImageResponses = imagesService.generatePresignedViewUrls(imageNames);
