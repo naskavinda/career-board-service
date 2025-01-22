@@ -33,3 +33,11 @@ greeting: "${sm://projects/553556926651/secrets/greeting/versions/1}"
 
 server:
   port: 8081
+
+aws:
+  access-key: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${AWS_REGION}
+  s3:
+    bucket-name: supun-init
+    presign-duration-minutes: 30
