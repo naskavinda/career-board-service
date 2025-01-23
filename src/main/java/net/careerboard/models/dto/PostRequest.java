@@ -1,22 +1,17 @@
 package net.careerboard.models.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PostRequest {
     private Long userId;
     private String title;
     private String content;
     private String status;
-
-    @Override
-    public String toString() {
-        return "CreatePostRequest{" +
-                "userId=" + userId +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                '}';
-    }
+    private List<String> imageNames;
 }

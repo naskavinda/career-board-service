@@ -14,12 +14,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class PostRepoTest {
+class PostRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private PostRepo postRepo;
+    private PostRepository postRepository;
 
     private User user;
 
@@ -53,7 +53,7 @@ class PostRepoTest {
 
         entityManager.flush();
 
-        List<Post> posts = postRepo.findByUserUserId(user.getUserId());
+        List<Post> posts = postRepository.findByUserUserId(user.getUserId());
 
         assertNotNull(posts);
         assertEquals(2, posts.size());

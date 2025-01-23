@@ -1,7 +1,11 @@
 package net.careerboard.services;
 
 import net.careerboard.models.Post;
-import net.careerboard.repos.PostRepo;
+import net.careerboard.models.User;
+import net.careerboard.models.dto.PostRequest;
+import net.careerboard.repos.PostRepository;
+import net.careerboard.repos.UserRepo;
+import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,10 +22,16 @@ import static org.mockito.Mockito.*;
 
 class PostServiceTest {
     @Mock
-    private PostRepo postRepo;
+    private PostRepository postRepository;
 
     @InjectMocks
     private PostService postService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private UserRepo userRepository;
 
     @BeforeEach
     void setUp() {
@@ -29,49 +39,69 @@ class PostServiceTest {
     }
 
     @Test
-    void addPost() {
+    void createPost() throws BadRequestException {
+        // Arrange
+        User user = new User();
+        user.setUserId(1L);
+        user.setUsername("j.doe");
+        user.setFirstName("John");
+        user.setLastName("Doe");
+
         Post post = new Post();
-        when(postRepo.save(any(Post.class))).thenReturn(post);
+        post.setUser(user);
+        PostRequest postRequest = new PostRequest();
+        postRequest.setUserId(1L);
+        postRequest.setImageNames(Arrays.asList("image1.jpg", "image2.jpg"));
+        postRequest.setTitle("Post title");
+        postRequest.setContent("Post content");
+        postRequest.setStatus("PUBLISHED");
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        Post createdPost = postService.addPost(post);
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+        when(userService.findById(any(Long.class))).thenReturn(Optional.of(user));
 
+
+        // Act
+        Post createdPost = postService.createPost(postRequest);
+
+        // Assert
         assertEquals(post, createdPost);
-        verify(postRepo, times(1)).save(post);
+        verify(postRepository, times(1)).save(any(Post.class));
     }
 
     @Test
     void findAllPosts() {
         List<Post> posts = Arrays.asList(new Post(), new Post());
-        when(postRepo.findAll()).thenReturn(posts);
+        when(postRepository.findAll()).thenReturn(posts);
 
         List<Post> foundPosts = postService.findAllPosts();
 
         assertEquals(posts, foundPosts);
-        verify(postRepo, times(1)).findAll();
+        verify(postRepository, times(1)).findAll();
     }
 
     @Test
     void findPostsByUserId() {
         Long userId = 1L;
         List<Post> posts = Arrays.asList(new Post(), new Post());
-        when(postRepo.findByUserUserId(userId)).thenReturn(posts);
+        when(postRepository.findByUserUserId(userId)).thenReturn(posts);
 
         List<Post> foundPosts = postService.findPostsByUserId(userId);
 
         assertEquals(posts, foundPosts);
-        verify(postRepo, times(1)).findByUserUserId(userId);
+        verify(postRepository, times(1)).findByUserUserId(userId);
     }
 
     @Test
     void findById() {
         Long postId = 1L;
         Post post = new Post();
-        when(postRepo.findById(postId)).thenReturn(Optional.of(post));
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
         Optional<Post> foundPost = postService.findById(postId);
 
         assertTrue(foundPost.isPresent());
         assertEquals(post, foundPost.get());
-        verify(postRepo, times(1)).findById(postId);
+        verify(postRepository, times(1)).findById(postId);
     }
 }
