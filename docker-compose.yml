@@ -22,6 +22,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: springboot-backend
+    env_file:
+      - .env
     ports:
       - "8081:8081" # Matches the server.port in your Spring Boot app
     environment:
