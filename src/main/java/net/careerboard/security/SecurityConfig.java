@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.careerboard.security.jwt.JwtAuthenticationFilter;
 import net.careerboard.security.jwt.JwtUtil;
 import net.careerboard.services.CustomUserDetailService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -30,6 +33,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailService customUserDetailService;
 
+    @Value("${cors.allowed-origins}")
+    private List<String> allowedOrigins;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -76,8 +81,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("localhost:8081");
+        config.setAllowedOrigins(allowedOrigins);
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("https://chitshit.online");
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
