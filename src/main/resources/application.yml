@@ -2,9 +2,9 @@ spring:
   application:
     name: career-board
   datasource:
-    url: jdbc:postgresql://localhost:5432/career_board_database?currentSchema=career_board_schema # Update to point to your local PostgreSQL
-    username: career_board_user # Replace with your local PostgreSQL username
-    password: career_board_password # Replace with your local PostgreSQL password
+    url: ${POSTGRES_URL} # Update to point to your local PostgreSQL
+    username: ${POSTGRES_USER} # Replace with your local PostgreSQL username
+    password: ${POSTGRES_PASSWORD} # Replace with your local PostgreSQL password
     driver-class-name: org.postgresql.Driver
     hikari:
       data-source-properties: { } # Remove Google Cloud SQL socket factory properties
@@ -12,7 +12,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: career_board_schema
+        default_schema: ${POSTGRES_DEFAULT_SCHEMA}
     hibernate:
       ddl-auto: none
 
@@ -39,5 +39,5 @@ aws:
   secret-key: ${AWS_SECRET_ACCESS_KEY}
   region: ${AWS_REGION}
   s3:
-    bucket-name: supun-init
+    bucket-name: ${AWS_BUCKET_NAME}
     presign-duration-minutes: 30
