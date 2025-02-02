@@ -41,10 +41,3 @@ aws:
   s3:
     bucket-name: ${AWS_BUCKET_NAME}
     presign-duration-minutes: 30
-
-
-cors:
-  allowed-origins:
-    - "localhost:8081"
-    - "http://localhost:4200"
-    - "https://chitshit.online"
