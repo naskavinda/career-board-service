@@ -33,6 +33,10 @@ public class SecurityConfig {
 
     private final CustomUserDetailService customUserDetailService;
 
+    @Value("${production.domain}")
+    private String productionDomain;
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -81,7 +85,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("localhost:8081");
         config.addAllowedOrigin("http://localhost:4200");
-        config.addAllowedOrigin("https://chitshit.online");
+        config.addAllowedOrigin(productionDomain);
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);

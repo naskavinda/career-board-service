@@ -41,3 +41,6 @@ aws:
   s3:
     bucket-name: ${AWS_BUCKET_NAME}
     presign-duration-minutes: 30
+
+production:
+  domain: ${PRODUCTION_DOMAIN}
