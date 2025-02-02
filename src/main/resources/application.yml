@@ -44,3 +44,4 @@ aws:
 
 production:
   domain: ${PRODUCTION_DOMAIN}
+environment: ${ENVIRONMENT}

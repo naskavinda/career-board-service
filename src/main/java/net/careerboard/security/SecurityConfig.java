@@ -22,8 +22,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -35,6 +33,9 @@ public class SecurityConfig {
 
     @Value("${production.domain}")
     private String productionDomain;
+
+    @Value("${environment}")
+    private String environment;
 
 
     @Bean
@@ -63,17 +64,19 @@ public class SecurityConfig {
         return http.cors(AbstractHttpConfigurer::disable)
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
-                                        "/swagger-resources/**", "/webjars/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/auth/register/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/auth/login/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/user/**").hasAuthority("USER")
-//                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAuthority("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/api/moderator/**").hasAuthority("MODERATOR")
-                                .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(auth -> {
+                    if (environment.equalsIgnoreCase("DEV")) {
+                        auth.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/webjars/**").permitAll();
+                    }
+                    auth
+                            .requestMatchers(HttpMethod.POST, "/api/auth/register/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/auth/login/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/user/**").hasAuthority("USER")
+                            .requestMatchers(HttpMethod.GET, "/api/moderator/**").hasAuthority("MODERATOR")
+                            .anyRequest().authenticated();
+                })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
