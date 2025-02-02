@@ -33,8 +33,6 @@ public class SecurityConfig {
 
     private final CustomUserDetailService customUserDetailService;
 
-    @Value("${cors.allowed-origins}")
-    private List<String> allowedOrigins;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
