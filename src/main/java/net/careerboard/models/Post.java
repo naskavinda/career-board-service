@@ -42,6 +42,9 @@ public class Post {
     @JsonManagedReference
     private List<PostImage> images;
 
+    @Column(name = "moderator_comment")
+    private String moderatorComment;
+
     @Override
     public String toString() {
         return "Post{" +
@@ -51,6 +54,7 @@ public class Post {
                 ", createdAt=" + createdAt +
                 ", status=" + status +
                 ", images=" + images +
+                ", moderatorComment='" + moderatorComment + '\'' +
                 '}';
     }
 
