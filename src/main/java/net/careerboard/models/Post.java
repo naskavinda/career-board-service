@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import net.careerboard.models.dto.PostDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,11 +55,6 @@ public class Post {
                 ", images=" + images +
                 ", moderatorComment='" + moderatorComment + '\'' +
                 '}';
-    }
-
-    @JsonBackReference
-    public PostDTO getPostDTO() {
-        return new PostDTO(getUser().getUserId(), getTitle(), getContent(), getStatus().name(), getPostId());
     }
 
     public String getUsername() {
