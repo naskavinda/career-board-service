@@ -2,15 +2,17 @@ package net.careerboard.controllers;
 
 import lombok.RequiredArgsConstructor;
 import net.careerboard.models.Post;
+import net.careerboard.models.dto.EditPostRequest;
 import net.careerboard.models.dto.PostRequest;
+import net.careerboard.models.dto.PostResponse;
 import net.careerboard.services.PostService;
 import net.careerboard.services.UserService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,13 +41,14 @@ public class PostController {
     // Method to fetch a post by its ID
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable Long postId) {
-        Optional<Post> postOptional = postService.findById(postId);
-        if (postOptional.isPresent()) {
-            return ResponseEntity.ok(postOptional.get());
-        } else {
+        try {
+
+            PostResponse postOptional = postService.findById(postId);
+            return ResponseEntity.ok(postOptional);
+        } catch (BadRequestException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("Post with ID " + postId + " not found");
+                    .body(e.getMessage());
         }
     }
 
@@ -55,6 +58,19 @@ public class PostController {
             Post savedPost = postService.createPost(request);
             System.out.println("Post created successfully");
             return ResponseEntity.ok(savedPost);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<?> editPost(@RequestBody EditPostRequest request) {
+        try {
+            Post editPost = postService.editPost(request);
+            System.out.println("Post Edit successfully");
+            return ResponseEntity.ok(editPost);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
