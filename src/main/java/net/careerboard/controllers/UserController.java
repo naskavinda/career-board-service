@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{userId}")
-    @PreAuthorize("hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         try {
             String response = userService.deleteUserById(userId);

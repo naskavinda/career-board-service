@@ -71,6 +71,9 @@ public class AuthService {
                 return new ResDto<>(Boolean.FALSE, ResDTOMessage.NOT_FOUND, loginRequest.username());
 
             }
+            if (!optionalUser.get().getActive()) {
+                return new ResDto<>(Boolean.FALSE, ResDTOMessage.NOT_FOUND, loginRequest.username());
+            }
             User user = optionalUser.get();
             String token = jwtUtil.generateToken(user);
 
