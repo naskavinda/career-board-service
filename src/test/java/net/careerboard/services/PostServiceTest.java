@@ -3,7 +3,6 @@ package net.careerboard.services;
 import net.careerboard.models.Post;
 import net.careerboard.models.User;
 import net.careerboard.models.dto.PostRequest;
-import net.careerboard.models.dto.PostResponse;
 import net.careerboard.repos.PostRepository;
 import net.careerboard.repos.UserRepo;
 import org.apache.coyote.BadRequestException;

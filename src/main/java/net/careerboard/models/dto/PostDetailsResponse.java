@@ -1,19 +1,23 @@
 package net.careerboard.models.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
-public class PostResponse {
-
+@AllArgsConstructor
+public class PostDetailsResponse {
     private Long userId;
     private String username;
     private String title;
+    private String content;
     private String status;
     private Long postId;
     private LocalDateTime createdAt;
+    private String moderatorComment;
+    private List<PostImageDto> images;
 }

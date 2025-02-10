@@ -5,12 +5,11 @@ import net.careerboard.models.Post;
 import net.careerboard.models.PostImage;
 import net.careerboard.models.PostLifecycle;
 import net.careerboard.models.User;
-import net.careerboard.models.dto.EditPostRequest;
-import net.careerboard.models.dto.PostImageDto;
-import net.careerboard.models.dto.PostRequest;
-import net.careerboard.models.dto.PostResponse;
+import net.careerboard.models.dto.*;
 import net.careerboard.repos.PostRepository;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -53,8 +52,20 @@ public class PostService {
         }
     }
 
-    public List<Post> findAllPosts() {
-        return this.postRepository.findAll();
+    public Page<PostResponse> findAllPosts(Pageable pageable) {
+        Page<Post> posts = postRepository.findAll(pageable);
+        return posts.map(PostService::mapToPostResponse);
+    }
+
+    private static PostResponse mapToPostResponse(Post post) {
+        return PostResponse.builder()
+                .postId(post.getPostId())
+                .userId(post.getUser().getUserId())
+                .username(post.getUser().getUsername())
+                .title(post.getTitle())
+                .status(post.getStatus().name())
+                .createdAt(post.getCreatedAt())
+                .build();
     }
 
     public List<Post> findPostsByUserId(Long userId) {
@@ -65,13 +76,13 @@ public class PostService {
         return this.postRepository.findByUserUserIdAndStatus(userId, PostLifecycle.PUBLISHED);
     }
 
-    public PostResponse findById(Long postId) throws BadRequestException {
+    public PostDetailsResponse findById(Long postId) throws BadRequestException {
         Optional<Post> optionalPost = this.postRepository.findById(postId);
         if (optionalPost.isEmpty()) {
             throw new BadRequestException("Post with ID %d not found!".formatted(postId));
         } else {
             Post post = optionalPost.get();
-            return PostResponse.builder()
+            return PostDetailsResponse.builder()
                     .postId(post.getPostId())
                     .userId(post.getUser().getUserId())
                     .username(post.getUser().getUsername())

@@ -4,10 +4,14 @@ import lombok.RequiredArgsConstructor;
 import net.careerboard.models.Post;
 import net.careerboard.models.dto.EditPostRequest;
 import net.careerboard.models.dto.PostRequest;
+import net.careerboard.models.dto.PostDetailsResponse;
 import net.careerboard.models.dto.PostResponse;
 import net.careerboard.services.PostService;
 import net.careerboard.services.UserService;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +26,14 @@ public class PostController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postService.findAllPosts();
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostResponse> posts = postService.findAllPosts(pageable);
         return ResponseEntity.ok(posts);
     }
 
-    // Method to fetch all posts by userId
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable Long userId) {
         List<Post> posts = postService.findPostsByUserId(userId);
@@ -43,7 +49,7 @@ public class PostController {
     public ResponseEntity<?> getPostById(@PathVariable Long postId) {
         try {
 
-            PostResponse postOptional = postService.findById(postId);
+            PostDetailsResponse postOptional = postService.findById(postId);
             return ResponseEntity.ok(postOptional);
         } catch (BadRequestException e) {
             return ResponseEntity
