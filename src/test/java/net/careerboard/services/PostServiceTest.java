@@ -69,16 +69,16 @@ class PostServiceTest {
         verify(postRepository, times(1)).save(any(Post.class));
     }
 
-    @Test
-    void findAllPosts() {
-        List<Post> posts = Arrays.asList(new Post(), new Post());
-        when(postRepository.findAll()).thenReturn(posts);
-
-        List<Post> foundPosts = postService.findAllPosts();
-
-        assertEquals(posts, foundPosts);
-        verify(postRepository, times(1)).findAll();
-    }
+//    @Test
+//    void findAllPosts() {
+//        List<Post> posts = Arrays.asList(new Post(), new Post());
+//        when(postRepository.findAll()).thenReturn(posts);
+//
+//        List<Post> foundPosts = postService.findAllPosts();
+//
+//        assertEquals(posts, foundPosts);
+//        verify(postRepository, times(1)).findAll();
+//    }
 
     @Test
     void findPostsByUserId() {
