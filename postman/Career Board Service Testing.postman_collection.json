@@ -1168,7 +1168,12 @@
 								"exec": [
 									"// Test Case 6: Missing Required Fields\r",
 									"pm.test(\"Missing Required Fields\", function () {\r",
-									"    pm.response.to.have.status(500);\r",
+									"    pm.response.to.have.status(400);\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.message).to.equal(\"VALIDATION_ERROR\");\r",
+									"    pm.expect(response.payload).to.include(\"Last name cannot be null\");\r",
+									"    pm.expect(response.payload).to.include(\"First name cannot be null\");\r",
+									"    pm.expect(response.payload).to.include(\"Role cannot be null\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1492,7 +1497,6 @@
 									"        pm.response.to.have.status(400);\r",
 									"    \r",
 									"    const response = pm.response.json();\r",
-									"    console.log(response);\r",
 									"    pm.expect(response.message).to.equal(\"VALIDATION_ERROR\")\r",
 									"    pm.expect(response.payload).to.include(\"Password must be between 8 and 64 characters\");\r",
 									"});"
