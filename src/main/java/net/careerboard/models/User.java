@@ -18,18 +18,18 @@ public class User {
     @Id
     Long userId;
     @Column(unique = true, nullable = false, length = 30, name = "username")
-    @Size(min = 4, max = 30)
+    @Size(min = 4, max = 30, message = "Username must be between 4 and 30 characters")
     String username;
     @Column(name = "first_name", nullable = false)
-    @Size(max = 30)
+    @Size(max = 30, message = "First name must not exceed 30 characters")
     String firstName;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 8, max = 64)
+    @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
     String password;
 
     @Column(name = "last_name", nullable = false)
-    @Size(max = 30)
+    @Size(max = 30, message = "Last name must not exceed 30 characters")
     String lastName;
     @Column(nullable = false, updatable = false, name = "created_at")
     LocalDateTime createdAt;
