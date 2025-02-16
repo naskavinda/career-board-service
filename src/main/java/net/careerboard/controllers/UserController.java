@@ -50,10 +50,10 @@ public class UserController {
     }
 
     @PostMapping(value = "/user")
-    public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
         try {
             User createdUser = this.userService.addUser(user);
-            return new ResponseEntity<>("User is created successfully: " + createdUser.toString(), HttpStatus.CREATED);
+            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(e.getMessage());

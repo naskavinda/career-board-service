@@ -1011,7 +1011,7 @@
 			]
 		},
 		{
-			"name": "GET /user",
+			"name": "POST /user",
 			"item": [
 				{
 					"name": "Successful User Creation",
@@ -1069,9 +1069,8 @@
 									"pm.test(\"Successful User Creation\", function () {\r",
 									"    pm.response.to.have.status(201);\r",
 									"    \r",
-									"    const responseText = pm.response.text();\r",
-									"    pm.expect(responseText).to.include(\"User is created successfully\");\r",
-									"    pm.expect(responseText).to.include(JSON.parse(pm.request.body.raw).username);\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.username).to.equal(JSON.parse(pm.request.body.raw).username);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1598,6 +1597,981 @@
 							"path": [
 								"api",
 								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET /user",
+			"item": [
+				{
+					"name": "Successful access with ADMIN role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define the login request\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"admin\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has users array\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User objects have correct structure\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    if (jsonData.length > 0) {\r",
+									"        pm.expect(jsonData[0]).to.have.all.keys(\r",
+									"            'userId',\r",
+									"            'username',\r",
+									"            'firstName',\r",
+									"            'lastName',\r",
+									"            'createdAt',\r",
+									"            'active',\r",
+									"            'role',\r",
+									"            'postCount'\r",
+									"        );\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Successful access with MODERATOR role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define the login request\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"moderator\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has users array\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User objects have correct structure\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    if (jsonData.length > 0) {\r",
+									"        pm.expect(jsonData[0]).to.have.all.keys(\r",
+									"            'userId',\r",
+									"            'username',\r",
+									"            'firstName',\r",
+									"            'lastName',\r",
+									"            'createdAt',\r",
+									"            'active',\r",
+									"            'role',\r",
+									"            'postCount'\r",
+									"        );\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unauthorized access attempt with regular USER role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define the login request\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"user\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403 Forbidden\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should get error message\", function () {\r",
+									"    const errorMsg = pm.response.json().error;\r",
+									"    pm.expect(errorMsg).to.equal(\"Access Denied: Insufficient permissions\")\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unauthorized access without authentication",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid token scenario",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"\r",
+									"    const responseData = pm.response.json();\r",
+									"    console.log(responseData)\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwicm9sZSI6WyJVU0VSIl0sInVzZXJJZCI6MSwiaWF0IjoxNzM5NjQzMjY0LCJleHAiOjE3Mzk2NzkyNjR9.jPMV9-htDVwja5tkuNdtNHoe7Oo4Wtcva6f4p1Sfte2",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DELETE /users/{userId}",
+			"item": [
+				{
+					"name": "Successful deletion by ADMIN",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Step 1: Login as admin to get token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"admin\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Step 2: Create a test user\r",
+									"const testUsername = \"testuser_\" + new Date().getTime(); // Unique username\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + '/api/user',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json',\r",
+									"        'Authorization': 'Bearer ' + pm.environment.get(\"auth_token\"),\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            username: testUsername,\r",
+									"            password: \"12345678\",\r",
+									"            firstName: \"Test\",\r",
+									"            lastName: \"User\",\r",
+									"            role: \"USER\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, response) {\r",
+									"    if (err) {\r",
+									"        console.error(err);\r",
+									"    } else {\r",
+									"        var jsonResponse = response.json();\r",
+									"        console.log(jsonResponse.userId)\r",
+									"        pm.environment.set(\"userId\", jsonResponse.userId);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the user was created and deleted successfully\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message is correct\", function () {\r",
+									"    pm.expect(pm.response.text()).to.equal(\"user is deleted\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Successful deletion by MODERATOR",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Step 1: Login as admin to get token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"moderator\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Step 2: Create a test user\r",
+									"const testUsername = \"testuser_\" + new Date().getTime(); // Unique username\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + '/api/user',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json',\r",
+									"        'Authorization': 'Bearer ' + pm.environment.get(\"auth_token\"),\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            username: testUsername,\r",
+									"            password: \"12345678\",\r",
+									"            firstName: \"Test\",\r",
+									"            lastName: \"User\",\r",
+									"            role: \"USER\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, response) {\r",
+									"    if (err) {\r",
+									"        console.error(err);\r",
+									"    } else {\r",
+									"        var jsonResponse = response.json();\r",
+									"        console.log(jsonResponse.userId)\r",
+									"        pm.environment.set(\"userId\", jsonResponse.userId);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the user was created and deleted successfully\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message is correct\", function () {\r",
+									"    pm.expect(pm.response.text()).to.equal(\"user is deleted\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unauthorized access attempt with regular USER role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Step 1: Login as admin to get token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"user\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"userId\", 2);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403 Forbidden\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message is correct\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.equal(\"Access Denied: Insufficient permissions\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unauthorized access without authentication",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.environment.set(\"userId\", 2);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response message is correct\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.equal(\"Unauthorized\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Attempting to delete a non-existent user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Step 1: Login as admin to get token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"moderator\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// non-existent userId\r",
+									"pm.environment.set(\"userId\", 999999);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    pm.expect(pm.response.text()).to.equal(\"user not available\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Attempting to delete an already inactive user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Step 1: Login as admin to get token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"moderator\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"        \r",
+									"\r",
+									"        // Step 2: Create a test user\r",
+									"        const testUsername = \"testuser_\" + new Date().getTime(); // Unique username\r",
+									"        pm.sendRequest({\r",
+									"            url: pm.environment.get(\"url\") + '/api/user',\r",
+									"            method: 'POST',\r",
+									"            header: {\r",
+									"                'Content-Type': 'application/json',\r",
+									"                'Authorization': 'Bearer ' + pm.environment.get(\"auth_token\"),\r",
+									"            },\r",
+									"            body: {\r",
+									"                mode: 'raw',\r",
+									"                raw: JSON.stringify({\r",
+									"                    username: testUsername,\r",
+									"                    password: \"12345678\",\r",
+									"                    firstName: \"Test\",\r",
+									"                    lastName: \"User\",\r",
+									"                    role: \"USER\"\r",
+									"                })\r",
+									"            }\r",
+									"        }, function (err, response) {\r",
+									"            if (err) {\r",
+									"                console.error(err);\r",
+									"            } else {\r",
+									"                var jsonResponse = response.json();\r",
+									"                console.log(jsonResponse.userId)\r",
+									"                pm.environment.set(\"userId\", jsonResponse.userId);\r",
+									"\r",
+									"                console.log(\"Delete User\")\r",
+									"                // Step 3: Delete Test User\r",
+									"                pm.sendRequest({\r",
+									"                    url: pm.environment.get(\"url\") + '/api/users/' + pm.environment.get(\"userId\"),\r",
+									"                    method: 'DELETE',\r",
+									"                    header: {\r",
+									"                        'Content-Type': 'application/json',\r",
+									"                        'Authorization': 'Bearer ' + pm.environment.get(\"auth_token\"),\r",
+									"                    }\r",
+									"                }, function (err, response) {\r",
+									"                    if (err) {\r",
+									"                        console.error(err);\r",
+									"                    } else {\r",
+									"                        // var jsonResponse = response.json();\r",
+									"                        console.log(response)\r",
+									"                        // pm.environment.set(\"userId\", jsonResponse.userId);\r",
+									"                    }\r",
+									"                });\r",
+									"            }\r",
+									"        });\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    pm.expect(pm.response.text()).to.equal(\"user is already inactive\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
 							]
 						}
 					},
