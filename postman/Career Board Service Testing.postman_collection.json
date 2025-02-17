@@ -643,7 +643,7 @@
 			"name": "GET /user/{userId}",
 			"item": [
 				{
-					"name": "Successfully Get User Details",
+					"name": "Successfully Get User Details with Admin role",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -700,7 +700,7 @@
 									"    pm.expect(user).to.have.property('role');\r",
 									"    \r",
 									"    // Verify it's the correct user\r",
-									"    pm.expect(user.userId).to.equal(Number(pm.variables.get(\"userId\")));\r",
+									"    pm.expect(user.userId).to.equal(2);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -730,6 +730,192 @@
 								"api",
 								"user",
 								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Successfully Get User Details with Moderator role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define the login request\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"moderator\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test Case 1: Successfully Get User Details\r",
+									"pm.test(\"Successfully Get User Details\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    \r",
+									"    const user = pm.response.json();\r",
+									"    \r",
+									"    // Verify user object structure\r",
+									"    pm.expect(user).to.have.property('userId');\r",
+									"    pm.expect(user).to.have.property('username');\r",
+									"    pm.expect(user).to.have.property('firstName');\r",
+									"    pm.expect(user).to.have.property('lastName');\r",
+									"    pm.expect(user).to.have.property('role');\r",
+									"    \r",
+									"    // Verify it's the correct user\r",
+									"    pm.expect(user.userId).to.equal(3);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/user/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Successfully Get User Details with User role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define the login request\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"user\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test Case 1: Successfully Get User Details\r",
+									"pm.test(\"Successfully Get User Details\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    \r",
+									"    const user = pm.response.json();\r",
+									"    \r",
+									"    // Verify user object structure\r",
+									"    pm.expect(user).to.have.property('userId');\r",
+									"    pm.expect(user).to.have.property('username');\r",
+									"    pm.expect(user).to.have.property('firstName');\r",
+									"    pm.expect(user).to.have.property('lastName');\r",
+									"    pm.expect(user).to.have.property('role');\r",
+									"    \r",
+									"    // Verify it's the correct user\r",
+									"    pm.expect(user.userId).to.equal(1);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/user/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"1"
 							]
 						}
 					},
@@ -1014,7 +1200,7 @@
 			"name": "POST /user",
 			"item": [
 				{
-					"name": "Successful User Creation",
+					"name": "Successful User Creation with Admin role",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1039,6 +1225,206 @@
 									"        mode: \"raw\",\r",
 									"        raw: JSON.stringify({\r",
 									"            username: \"admin\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test Case 1: Successful User Creation\r",
+									"pm.test(\"Successful User Creation\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    \r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.username).to.equal(JSON.parse(pm.request.body.raw).username);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"{{dynamicUsername}}\",\r\n    \"password\": \"password123\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\",\r\n    \"role\": \"USER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Successful User Creation with moderator role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate a unique username using timestamp + random number\r",
+									"let uniqueUsername = \"user_\" + Date.now() + \"_\" + Math.floor(Math.random() * 1000);\r",
+									"\r",
+									"// Set the generated username as a Postman variable\r",
+									"pm.variables.set(\"dynamicUsername\", uniqueUsername);\r",
+									"\r",
+									"console.log(\"Generated Username:\", uniqueUsername);\r",
+									"\r",
+									"// Define the login request\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"moderator\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test Case 1: Successful User Creation\r",
+									"pm.test(\"Successful User Creation\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    \r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.username).to.equal(JSON.parse(pm.request.body.raw).username);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"{{dynamicUsername}}\",\r\n    \"password\": \"password123\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\",\r\n    \"role\": \"USER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Successful User Creation with user role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate a unique username using timestamp + random number\r",
+									"let uniqueUsername = \"user_\" + Date.now() + \"_\" + Math.floor(Math.random() * 1000);\r",
+									"\r",
+									"// Set the generated username as a Postman variable\r",
+									"pm.variables.set(\"dynamicUsername\", uniqueUsername);\r",
+									"\r",
+									"console.log(\"Generated Username:\", uniqueUsername);\r",
+									"\r",
+									"// Define the login request\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",  // Adjust login endpoint\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"user\",\r",
 									"            password: \"12345678\"\r",
 									"        })\r",
 									"    }\r",
@@ -1605,7 +1991,7 @@
 			]
 		},
 		{
-			"name": "GET /user",
+			"name": "GET /users",
 			"item": [
 				{
 					"name": "Successful access with ADMIN role",
@@ -2572,6 +2958,339 @@
 								"api",
 								"users",
 								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET /post",
+			"item": [
+				{
+					"name": "Get All Posts with Pagination",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login to get the authentication token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"user\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test response structure\r",
+									"pm.test(\"Response has correct pagination structure\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    // Check page structure\r",
+									"    pm.expect(responseData).to.have.property('content').that.is.an('array');\r",
+									"    pm.expect(responseData).to.have.property('pageable');\r",
+									"    pm.expect(responseData).to.have.property('totalElements');\r",
+									"    pm.expect(responseData).to.have.property('totalPages');\r",
+									"    pm.expect(responseData).to.have.property('size');\r",
+									"    pm.expect(responseData).to.have.property('number');\r",
+									"});\r",
+									"\r",
+									"// Test content structure if there are posts\r",
+									"pm.test(\"Posts have correct structure\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    if (responseData.content.length > 0) {\r",
+									"        const firstPost = responseData.content[0];\r",
+									"        console.log(firstPost);\r",
+									"        pm.expect(firstPost).to.have.property('postId');\r",
+									"        pm.expect(firstPost).to.have.property('title');\r",
+									"        pm.expect(firstPost).to.have.property('userId');\r",
+									"        pm.expect(firstPost).to.have.property('createdAt');\r",
+									"        pm.expect(firstPost).to.have.property('status');\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Test pagination parameters\r",
+									"pm.test(\"Pagination parameters are correct\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    const requestedPage = Number(pm.environment.get(\"page\"));\r",
+									"    const requestedSize = Number(pm.environment.get(\"size\"));\r",
+									"    \r",
+									"    pm.expect(responseData.number).to.equal(requestedPage);\r",
+									"    pm.expect(responseData.size).to.equal(requestedSize);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/post?page=0&size=10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"post"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Posts with Custom Page Size",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login to get the authentication token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"user\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test Script\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Page size matches requested size\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    if(responseData.totalElements >= 5){\r",
+									"        pm.expect(responseData.size).to.equal(5);\r",
+									"        pm.expect(responseData.content.length).to.be.at.most(5);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/post?page=0&size=5",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"post"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Posts from Second Page",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Login to get the authentication token\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"url\") + \"/api/auth/login\",\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            username: \"user\",\r",
+									"            password: \"12345678\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(\"Login Request Failed:\", err);\r",
+									"    } else {\r",
+									"        // Extract the token from the response\r",
+									"        const responseData = res.json();\r",
+									"        const token = responseData.payload.token;\r",
+									"\r",
+									"        // Store the token in an environment variable\r",
+									"        pm.environment.set(\"auth_token\", token);\r",
+									"        console.log(\"Token Set:\", token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test Script\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Page size matches requested size\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    if(responseData.totalElements >= 20){\r",
+									"        pm.expect(responseData.size).to.equal(10);\r",
+									"        pm.expect(responseData.content.length).to.be.at.most(10);\r",
+									"    } else if(responseData.totalElements >= 10) {\r",
+									"        pm.expect(responseData.size).to.equal(10);\r",
+									"        pm.expect(responseData.content.length).to.be.at.most(responseData.totalElements - 10);\r",
+									"    } else {\r",
+									"        pm.expect(responseData.size).to.equal(10);\r",
+									"        pm.expect(responseData.content.length).to.be.at.most(0);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/post?page=1&size=10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"post"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
 							]
 						}
 					},
