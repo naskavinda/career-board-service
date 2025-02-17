@@ -2,23 +2,23 @@ spring:
   application:
     name: career-board
   datasource:
-    url: ${POSTGRES_URL} # Update to point to your local PostgreSQL
-    username: ${POSTGRES_USER} # Replace with your local PostgreSQL username
-    password: ${POSTGRES_PASSWORD} # Replace with your local PostgreSQL password
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mysql://localhost:3306/career-board
+    username: root
+    password: oracle
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      data-source-properties: { } # Remove Google Cloud SQL socket factory properties
+      data-source-properties: {}
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: ${POSTGRES_DEFAULT_SCHEMA}
+        dialect: org.hibernate.dialect.MySQLDialect  # Recommended for MySQL 8+
     hibernate:
-      ddl-auto: none
-
+      ddl-auto: update  # This will automatically create/update tables
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+  flyway:
+    enabled: false  # Disable Flyway if not needed
 
 management:
   endpoints:
@@ -35,13 +35,13 @@ server:
   port: 8081
 
 aws:
-  access-key: ${AWS_ACCESS_KEY_ID}
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
-  region: ${AWS_REGION}
+  access-key: ${AWS_ACCESS_KEY_ID:dummyAccessKey}      # Default if not set
+  secret-key: ${AWS_SECRET_ACCESS_KEY:dummySecretKey}    # Default if not set
+  region: ${AWS_REGION:us-east-1}                        # Default region
   s3:
-    bucket-name: ${AWS_BUCKET_NAME}
+    bucket-name: ${AWS_BUCKET_NAME:dummyBucketName}      # Default bucket name
     presign-duration-minutes: 30
 
 production:
-  domain: ${PRODUCTION_DOMAIN}
-environment: ${ENVIRONMENT}
+  domain: ${PRODUCTION_DOMAIN:localhost}  # Defaults to localhost if not set
+environment: ${ENVIRONMENT:dev}            # Defaults to dev if not set

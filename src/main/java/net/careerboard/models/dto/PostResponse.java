@@ -14,6 +14,6 @@ public class PostResponse {
     private String username;
     private String title;
     private String status;
-    private Long postId;
+    private String postId;
     private LocalDateTime createdAt;
 }

@@ -46,7 +46,7 @@ public class PostController {
 
     // Method to fetch a post by its ID
     @GetMapping("/{postId}")
-    public ResponseEntity<?> getPostById(@PathVariable Long postId) {
+    public ResponseEntity<?> getPostById(@PathVariable String postId) {
         try {
 
             PostDetailsResponse postOptional = postService.findById(postId);

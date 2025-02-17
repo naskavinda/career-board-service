@@ -13,6 +13,6 @@ public class EditPostRequest {
     private String content;
     private String status;
     private List<PostImageDto> images;
-    private Long postId;
+    private String postId;
     private String moderatorComment;
 }

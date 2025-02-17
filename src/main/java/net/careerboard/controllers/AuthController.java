@@ -9,10 +9,8 @@ import net.careerboard.security.jwt.JwtUtil;
 import net.careerboard.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 
 @RestController
@@ -43,5 +41,10 @@ public class AuthController {
         } else {
             return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/csrf/token")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
     }
 }

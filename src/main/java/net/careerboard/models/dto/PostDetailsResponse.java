@@ -16,7 +16,7 @@ public class PostDetailsResponse {
     private String title;
     private String content;
     private String status;
-    private Long postId;
+    private String postId;
     private LocalDateTime createdAt;
     private String moderatorComment;
     private List<PostImageDto> images;
