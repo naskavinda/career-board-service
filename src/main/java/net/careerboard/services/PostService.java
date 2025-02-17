@@ -10,6 +10,9 @@ import net.careerboard.repos.PostRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -113,7 +116,11 @@ public class PostService {
                 post.setStatus(PostLifecycle.valueOf(request.getStatus()));
                 post.setStatus(PostLifecycle.valueOf(request.getStatus()));
                 Set<String> rolesWithCommentPermission = Set.of("MODERATOR", "ADMIN");
-                if (rolesWithCommentPermission.contains(user.getRole().name())) {
+                SecurityContext context = SecurityContextHolder.getContext();
+                List<String> list = context.getAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+                System.out.println(list);
+                if (rolesWithCommentPermission.contains(list.get(0))) {
+                    System.out.println(request.getModeratorComment());
                     post.setModeratorComment(request.getModeratorComment());
                 }
                 List<PostImage> postImageList = request.getImages().stream().map(image -> {
