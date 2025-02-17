@@ -94,7 +94,7 @@ public class SecurityConfig {
                         })
                 )
 
-                // 5. Authorize HTTP Requests
+               
                 .authorizeHttpRequests(auth -> {
                     if (environment.equalsIgnoreCase("DEV")) {
                         auth.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
