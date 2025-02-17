@@ -5,11 +5,17 @@ import net.careerboard.models.Post;
 import net.careerboard.models.PostImage;
 import net.careerboard.models.PostLifecycle;
 import net.careerboard.models.User;
-import net.careerboard.models.dto.*;
+import net.careerboard.models.dto.EditPostRequest;
+import net.careerboard.models.dto.PostDetailsResponse;
+import net.careerboard.models.dto.PostImageDto;
+import net.careerboard.models.dto.PostRequest;
+import net.careerboard.models.dto.PostResponse;
 import net.careerboard.repos.PostRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,7 +62,11 @@ public class PostService {
     }
 
     public Page<PostResponse> findAllPosts(Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = postRepository.findAll(PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            Sort.by(Sort.Direction.DESC, "createdAt")
+        ));
         return posts.map(PostService::mapToPostResponse);
     }
 
@@ -72,7 +82,7 @@ public class PostService {
     }
 
     public List<Post> findPostsByUserId(Long userId) {
-        return this.postRepository.findByUserUserId(userId);
+        return this.postRepository.findByUserUserIdOrderByCreatedAtDesc(userId);
     }
 
     public List<Post> findPublishedPostsByUserId(Long userId) {
