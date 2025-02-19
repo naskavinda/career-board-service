@@ -2,6 +2,7 @@ package net.careerboard.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.careerboard.dto.CreateUserRequest;
 import net.careerboard.dto.UserResponse;
 import net.careerboard.models.User;
 import net.careerboard.services.UserService;
@@ -50,9 +51,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/user")
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
         try {
-            User createdUser = this.userService.addUser(user);
+            UserResponse createdUser = this.userService.addUser(createUserRequest);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)

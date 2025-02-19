@@ -1,6 +1,7 @@
 package net.careerboard.services;
 
 import lombok.RequiredArgsConstructor;
+import net.careerboard.dto.CreateUserRequest;
 import net.careerboard.dto.UserResponse;
 import net.careerboard.models.User;
 import net.careerboard.repos.UserRepo;
@@ -23,31 +24,51 @@ public class UserService {
         return userRepo.findById(userId);
     }
 
-
     public boolean existsByUsername(String username) {
         return userRepo.findByUsername(username).isPresent();
     }
 
+    public UserResponse addUser(CreateUserRequest createUserRequest) throws Exception {
+        if (existsByUsername(createUserRequest.getUsername())) {
+            throw new DataIntegrityViolationException("username already taken");
+        }
+        User user = mapToUser(createUserRequest);
+        user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+        return mapToUserResponse(userRepo.save(user));
+    }
 
-    public User addUser(User user) throws Exception {
+    public UserResponse addUser(User user) throws Exception {
         if (existsByUsername(user.getUsername())) {
             throw new DataIntegrityViolationException("username already taken");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        return mapToUserResponse(userRepo.save(user));
+    }
+
+    private User mapToUser(CreateUserRequest createUserRequest) {
+        return User.builder()
+                .username(createUserRequest.getUsername())
+                .currentCompany(createUserRequest.getCurrentCompany())
+                .active(createUserRequest.getActive())
+                .build();
     }
 
     public List<UserResponse> getAllUsers() {
-        return userRepo.findAll().stream().map(user -> UserResponse.builder()
+        return userRepo.findAll().stream()
+                .map(UserService::mapToUserResponse)
+                .toList();
+    }
+
+    private static UserResponse mapToUserResponse(User user) {
+        return UserResponse.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .currentCompany(user.getCurrentCompany())
                 .createdAt(user.getCreatedAt())
                 .active(user.getActive())
                 .role(user.getRole().name())
                 .postCount(user.getPosts().size())
-                .build()).toList();
+                .build();
     }
 
     public Optional<User> findByUsername(String username) {

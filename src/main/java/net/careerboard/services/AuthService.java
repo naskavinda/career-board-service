@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import net.careerboard.dto.UserResponse;
 import net.careerboard.models.Role;
 import net.careerboard.models.User;
 import net.careerboard.models.dto.*;
@@ -39,13 +40,7 @@ public class AuthService {
             validateUser(user);
 
             user.setRole(Role.USER);
-            userService.addUser(user);
-
-            UserResponseDto userResponse = new UserResponseDto(
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getRole()
-            );
+            UserResponse userResponse = userService.addUser(user);
 
             return new ResDto<>(Boolean.TRUE, ResDTOMessage.CREATED, userResponse);
         } catch (ConstraintViolationException e) {
