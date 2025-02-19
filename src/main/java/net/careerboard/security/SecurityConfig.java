@@ -94,7 +94,7 @@ public class SecurityConfig {
                         })
                 )
 
-               
+                // 5. Authorize HTTP Requests
                 .authorizeHttpRequests(auth -> {
                     if (environment.equalsIgnoreCase("DEV")) {
                         auth.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
@@ -110,25 +110,25 @@ public class SecurityConfig {
                             .anyRequest().authenticated();
                 })
 
-                // 6. ✅ Add CSRF token explicitly in response headers & cookies
+
                 .addFilterAfter((request, response, chain) -> {
                     CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
                     if (csrfToken != null) {
-                        HttpServletResponse httpServletResponse = (HttpServletResponse) response; // ✅ Cast response
-                        httpServletResponse.setHeader("X-CSRF-TOKEN", csrfToken.getToken()); // ✅ Set CSRF token in headers
+                        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+                        httpServletResponse.setHeader("X-CSRF-TOKEN", csrfToken.getToken());
 
-                        // ✅ Set CSRF token in cookies (so frontend can access it)
+
                         Cookie csrfCookie = new Cookie("XSRF-TOKEN", csrfToken.getToken());
                         csrfCookie.setPath("/");
-                        csrfCookie.setSecure(true); // Set to true if using HTTPS
-                        csrfCookie.setHttpOnly(false); // Must be false so frontend can read it
-                        csrfCookie.setMaxAge(60 * 60); // Expiration time (1 hour)
+                        csrfCookie.setSecure(true);
+                        csrfCookie.setHttpOnly(false);
+                        csrfCookie.setMaxAge(60 * 60);
                         httpServletResponse.addCookie(csrfCookie);
                     }
                     chain.doFilter(request, response);
                 }, UsernamePasswordAuthenticationFilter.class)
 
-                // 7. Add JWT Authentication Filter (if using JWT)
+
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 
                 .build();

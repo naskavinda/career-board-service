@@ -23,7 +23,6 @@ public class JwtUtil {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final long TOKEN_VALIDITY_MS = 10 * 60 * 60 * 1000;
 
-
     public String generateToken(User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + TOKEN_VALIDITY_MS);
