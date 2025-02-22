@@ -2,23 +2,26 @@ spring:
   application:
     name: career-board
   datasource:
-    url: jdbc:mysql://localhost:3306/career-board
-    username: root
-    password: oracle
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Using PostgreSQL details provided
+    url: jdbc:postgresql://db-postgresql-nyc3-96131-do-user-18737254-0.m.db.ondigitalocean.com:25060/defaultdb?currentSchema=career_board_schema
+    username: doadmin
+    password: AVNS_xi9sHcdBBMxWAznCdBb
+    driver-class-name: org.postgresql.Driver
     hikari:
       data-source-properties: {}
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect  # Recommended for MySQL 8+
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: career_board_schema
     hibernate:
-      ddl-auto: update  # This will automatically create/update tables
+      ddl-auto: update  # Automatically create/update tables based on entity definitions
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
   flyway:
     enabled: false  # Disable Flyway if not needed
+
 
 management:
   endpoints:
