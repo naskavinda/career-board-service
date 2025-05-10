@@ -1,99 +1,111 @@
 # Career Board
 
-![Career Board](https://github.com/career-crew/career-board-service/assets/53615807/61b0c2fb-820f-4464-b84c-c18f0fc793dd)
-
-## Overview
-
-Career Board is a basic Spring Boot application that provides a simple REST endpoint. This project is a starting point for a career board application and can be expanded with additional features and functionality.
-
-## Features
-
-- Single REST endpoint that returns a welcome message.
-- Built with Java 11 and Spring Boot.
+This is a Spring Boot application that runs with **Java 21** and uses **PostgreSQL** as the database. You can set it up either using **Docker** or manually on your local machine.
 
 ## Prerequisites
 
-- Java 11
-- Maven 3.6.3 or higher
-- Git
+Before running the application, ensure you have the following installed:
 
-## Setting Up the Project Locally
+- **Git** ([Download here](https://git-scm.com/))
 
-1. **Clone the repository**
+Before running the application, ensure you have the following installed:
 
-    ```sh
-    git clone https://github.com/career-crew/career-board.git
-    cd career-board
-    ```
+- **Java 21** ([Download here](https://adoptium.net/))
+- **PostgreSQL** (if running locally)
+- **Docker & Docker Compose** (if using Docker setup)
 
-2. **Build the project**
+## Cloning the Repository
 
-    ```sh
-    mvn clean install
-    ```
+To get started, first clone the repository:
+```sh
+git clone https://github.com/career-board/career-board-service.git
+cd career-board-service
+```
 
-3. **Run the application**
+## Setup Instructions
 
-    ```sh
-    mvn spring-boot:run
-    ```
+### 1. Configuration
+Before starting the application, you need to configure environment variables:
 
-4. **Access the application**
+1. **Rename the environment file:**
+   ```sh
+   mv .example.env .env
+   ```
+2. **Update credentials** inside `.env` file to match your database configuration.
 
-   Open your browser and go to `http://localhost:8081`.
+---
 
-5. **Access Swagger UI & API Docs**
+### 2. Running with Docker (Recommended)
 
-   Open your browser and go to `http://localhost:8081/swagger-ui.html` to access the swagger UI.
+To start the application using Docker:
 
-   Open your browser and go to `http://localhost:8081/v3/api-docs` to access the API documentation.
+To start the application using Docker:
 
-## Endpoint
+```sh
+mv .example.env .env  # Rename the env file if not already done
+# Update the credentials in the .env file
 
-- `GET /`: Returns a `Hello World!` message.
+docker-compose up --build
+```
 
-## Contributing
+This will build the application and start it along with a PostgreSQL database inside a Docker container.
 
-We welcome contributions! If you want to contribute to this project, please follow these steps:
+If you make changes and need to remove all images and containers created, you can use:
+```sh
+docker-compose down --rmi all
+```
 
-1. **Fork the repository**
+---
 
-   Click the "Fork" button at the top right of this page to create a copy of the repository under your own GitHub account.
+### 3. Running Locally (Without Docker)
 
-2. **Clone your fork**
+If you prefer to run the application without Docker:
 
-    ```sh
-    git clone https://github.com/career-crew/career-board.git
-    cd career-board
-    ```
+1. **Ensure you have Java 21 installed** and set up correctly.
+2. **Ensure you have a running PostgreSQL instance.**
+3. **Rename and configure the `.env` file** to match your local PostgreSQL setup.
+4. **Run the application:**
+   ```sh
+   mvn clean install
+   mvn spring-boot:run
+   ```
 
-3. **Create a new branch**
+This will start the application and connect to your local PostgreSQL instance.
 
-    ```sh
-    git checkout -b my-new-feature
-    ```
+---
 
-4. **Make your changes**
+## Verifying the Setup
 
-   Make the necessary changes to the codebase.
+Once the application is running, verify that it's working by visiting:
 
-5. **Commit your changes**
+```sh
+http://localhost:8081
+```
 
-    ```sh
-    git add .
-    git commit -m "Add some feature"
-    ```
+You should see the application running successfully.
 
-6. **Push to the branch**
+---
 
-    ```sh
-    git push origin my-new-feature
-    ```
+## Stopping the Application
 
-7. **Create a pull request**
+- **If running with Docker:**
+  ```sh
+  docker-compose down
+  ```
 
-   Open a pull request to the main repository and provide a clear description of your changes.
+- **If running locally:** Press `Ctrl + C` in the terminal where the app is running.
+
+---
+
+## Troubleshooting
+
+- If the application fails to start, check the `.env` file for incorrect database credentials.
+- Ensure PostgreSQL is running and accessible.
+- If using Docker, ensure Docker is installed and running.
+
+---
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://www.mit.edu/~amini/LICENSE.md) file for details.
+This project is licensed under the MIT License.
+

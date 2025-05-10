@@ -5,10 +5,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import net.careerboard.models.dto.PostDTO;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 @Getter
@@ -17,8 +21,11 @@ import java.util.List;
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "post_id", updatable = false, nullable = false, columnDefinition = "varchar(255)")
+    private String postId;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
@@ -42,6 +49,9 @@ public class Post {
     @JsonManagedReference
     private List<PostImage> images;
 
+    @Column(name = "moderator_comment")
+    private String moderatorComment;
+
     @Override
     public String toString() {
         return "Post{" +
@@ -51,13 +61,13 @@ public class Post {
                 ", createdAt=" + createdAt +
                 ", status=" + status +
                 ", images=" + images +
+                ", moderatorComment='" + moderatorComment + '\'' +
                 '}';
     }
 
-    @JsonBackReference
-    public PostDTO getPostDTO() {
-        return new PostDTO(getUser().getUserId(), getTitle(), getContent(), getStatus().name(), getPostId());
-    }
+
+
+
 
     public String getUsername() {
         return user.getUsername();

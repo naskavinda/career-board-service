@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.careerboard.dto.UserResponse;
 import net.careerboard.models.User;
 import net.careerboard.repos.UserRepo;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class UserService {
 
     public User addUser(User user) throws Exception {
         if (existsByUsername(user.getUsername())) {
-            throw new IllegalAccessException("username alredy taken");
+            throw new DataIntegrityViolationException("username already taken");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);

@@ -2,23 +2,26 @@ spring:
   application:
     name: career-board
   datasource:
-    url: ${POSTGRES_URL} # Update to point to your local PostgreSQL
-    username: ${POSTGRES_USER} # Replace with your local PostgreSQL username
-    password: ${POSTGRES_PASSWORD} # Replace with your local PostgreSQL password
+    # Using PostgreSQL details provided
+    url: jdbc:postgresql://db-postgresql-nyc3-96131-do-user-18737254-0.m.db.ondigitalocean.com:25060/defaultdb?currentSchema=career_board_schema
+    username: doadmin
+    password: AVNS_xi9sHcdBBMxWAznCdBb
     driver-class-name: org.postgresql.Driver
     hikari:
-      data-source-properties: { } # Remove Google Cloud SQL socket factory properties
+      data-source-properties: {}
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: ${POSTGRES_DEFAULT_SCHEMA}
+        default_schema: career_board_schema
     hibernate:
-      ddl-auto: none
-
+      ddl-auto: update  # Automatically create/update tables based on entity definitions
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+  flyway:
+    enabled: false  # Disable Flyway if not needed
+
 
 management:
   endpoints:
@@ -35,9 +38,13 @@ server:
   port: 8081
 
 aws:
-  access-key: ${AWS_ACCESS_KEY_ID}
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
-  region: ${AWS_REGION}
+  access-key: ${AWS_ACCESS_KEY_ID:dummyAccessKey}      # Default if not set
+  secret-key: ${AWS_SECRET_ACCESS_KEY:dummySecretKey}    # Default if not set
+  region: ${AWS_REGION:us-east-1}                        # Default region
   s3:
-    bucket-name: ${AWS_BUCKET_NAME}
+    bucket-name: ${AWS_BUCKET_NAME:dummyBucketName}      # Default bucket name
     presign-duration-minutes: 30
+
+production:
+  domain: ${PRODUCTION_DOMAIN:localhost}  # Defaults to localhost if not set
+environment: ${ENVIRONMENT:dev}            # Defaults to dev if not set

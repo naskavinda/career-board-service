@@ -1,9 +1,6 @@
 package net.careerboard.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +23,6 @@ public class JwtUtil {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final long TOKEN_VALIDITY_MS = 10 * 60 * 60 * 1000;
 
-
     public String generateToken(User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + TOKEN_VALIDITY_MS);
@@ -42,8 +38,11 @@ public class JwtUtil {
     }
 
     public String extractUsername(String token) {
-        String username = extractClaim(token, Claims::getSubject);
-        return username;
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (JwtException e) {
+            throw new JwtException("Invalid JWT token");
+        }
     }
 
     public Date extractExpiration(String token) {
@@ -64,11 +63,10 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-
         try {
             final String extractedUsername = extractUsername(token);
             return extractedUsername.equals(userDetails.getUsername()) && !isTokenExpired(token);
-        } catch (Exception e) {
+        } catch (JwtException e) {
             return false;
         }
     }
